@@ -1,0 +1,214 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function currentUser() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid));
+    }
+
+    function isAdmin() {
+      return signedIn() && currentUser().data.role == "admin";
+    }
+
+    function isTeacher() {
+      return signedIn() && currentUser().data.role in ["teacher", "admin"];
+    }
+
+    function isOwner(resourceData) {
+      return signedIn() && resourceData.teacherId == request.auth.uid;
+    }
+
+    function validHttpsUrl(value) {
+      return value == "" || (value is string && value.size() <= 1000 && value.matches("^https://[^\\s]+$"));
+    }
+
+    function validGrade(value) {
+      return value == "" || (value is string && value in ["5","6","7","8","9","10","11","12"]);
+    }
+
+    function validName(value) {
+      return value is string && value.size() >= 2 && value.size() <= 80;
+    }
+
+    function validShortText(value, max) {
+      return value is string && value.size() <= max;
+    }
+
+    function validTimestamp(value) {
+      return value is timestamp;
+    }
+
+    match /users/{userId} {
+      allow create: if signedIn()
+        && request.auth.uid == userId
+        && request.resource.data.keys().hasOnly([
+          "uid", "name", "email", "role", "points",
+          "completedLessons", "completedTests", "createdAt"
+        ])
+        && request.resource.data.uid == userId
+        && request.resource.data.email == request.auth.token.email
+        && request.resource.data.role == "student"
+        && validName(request.resource.data.name)
+        && request.resource.data.points == 0
+        && request.resource.data.completedLessons is list
+        && request.resource.data.completedLessons.size() <= 500
+        && request.resource.data.completedTests is list
+        && request.resource.data.completedTests.size() <= 500
+        && validTimestamp(request.resource.data.createdAt);
+
+      allow read: if signedIn()
+        && (request.auth.uid == userId || isTeacher());
+
+      // All profile changes, including name/grade/points/roles, are server-controlled.
+      allow update, delete: if false;
+    }
+
+    match /courses/{courseId} {
+      allow read: if signedIn();
+
+      allow create: if isTeacher()
+        && request.resource.data.keys().hasOnly([
+          "title", "icon", "description", "grade", "videoUrl",
+          "fileUrl", "wordwallUrl", "teacherId", "teacherName", "createdAt"
+        ])
+        && request.resource.data.teacherId == request.auth.uid
+        && request.resource.data.teacherName == currentUser().data.name
+        && validShortText(request.resource.data.title, 200)
+        && request.resource.data.title.size() > 0
+        && validShortText(request.resource.data.icon, 20)
+        && validShortText(request.resource.data.description, 5000)
+        && validGrade(request.resource.data.grade)
+        && validHttpsUrl(request.resource.data.videoUrl)
+        && validHttpsUrl(request.resource.data.fileUrl)
+        && validHttpsUrl(request.resource.data.wordwallUrl)
+        && validTimestamp(request.resource.data.createdAt);
+
+      allow update: if isAdmin() || (
+        isTeacher()
+        && resource.data.teacherId == request.auth.uid
+        && request.resource.data.teacherId == resource.data.teacherId
+        && request.resource.data.teacherName == currentUser().data.name
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+          "title", "icon", "description", "grade", "videoUrl", "fileUrl", "wordwallUrl", "teacherName"
+        ])
+        && validShortText(request.resource.data.title, 200)
+        && request.resource.data.title.size() > 0
+        && validShortText(request.resource.data.icon, 20)
+        && validShortText(request.resource.data.description, 5000)
+        && validGrade(request.resource.data.grade)
+        && validHttpsUrl(request.resource.data.videoUrl)
+        && validHttpsUrl(request.resource.data.fileUrl)
+        && validHttpsUrl(request.resource.data.wordwallUrl)
+      );
+
+      allow delete: if isAdmin() || (isTeacher() && resource.data.teacherId == request.auth.uid);
+    }
+
+    match /lessons/{lessonId} {
+      allow read: if signedIn();
+
+      allow create: if isTeacher()
+        && request.resource.data.keys().hasOnly([
+          "courseId", "grade", "title", "body", "videoUrl", "fileUrl",
+          "wordwallUrl", "teacherId", "teacherName", "createdAt"
+        ])
+        && request.resource.data.teacherId == request.auth.uid
+        && request.resource.data.teacherName == currentUser().data.name
+        && validShortText(request.resource.data.courseId, 200)
+        && request.resource.data.courseId.size() > 0
+        && validGrade(request.resource.data.grade)
+        && validShortText(request.resource.data.title, 200)
+        && request.resource.data.title.size() > 0
+        && validShortText(request.resource.data.body, 10000)
+        && validHttpsUrl(request.resource.data.videoUrl)
+        && validHttpsUrl(request.resource.data.fileUrl)
+        && validHttpsUrl(request.resource.data.wordwallUrl)
+        && validTimestamp(request.resource.data.createdAt);
+
+      allow update: if isAdmin() || (
+        isTeacher()
+        && resource.data.teacherId == request.auth.uid
+        && request.resource.data.teacherId == resource.data.teacherId
+        && request.resource.data.teacherName == currentUser().data.name
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+          "courseId", "grade", "title", "body", "videoUrl", "fileUrl", "wordwallUrl", "teacherName"
+        ])
+        && validShortText(request.resource.data.courseId, 200)
+        && request.resource.data.courseId.size() > 0
+        && validGrade(request.resource.data.grade)
+        && validShortText(request.resource.data.title, 200)
+        && request.resource.data.title.size() > 0
+        && validShortText(request.resource.data.body, 10000)
+        && validHttpsUrl(request.resource.data.videoUrl)
+        && validHttpsUrl(request.resource.data.fileUrl)
+        && validHttpsUrl(request.resource.data.wordwallUrl)
+      );
+
+      allow delete: if isAdmin() || (isTeacher() && resource.data.teacherId == request.auth.uid);
+    }
+
+    match /tests/{testId} {
+      // Public test document MUST contain only question/options. Answer keys live elsewhere.
+      allow read: if signedIn();
+      allow create, update, delete: if false;
+    }
+
+    match /testAnswers/{testId} {
+      // Answer keys are server-only. Cloud Functions use Admin SDK and bypass these rules.
+      allow read, write: if false;
+    }
+
+    match /results/{resultId} {
+      // Results are created and finalized only by the server.
+      allow create, update, delete: if false;
+      allow read: if signedIn()
+        && (resource.data.studentId == request.auth.uid || isTeacher());
+    }
+
+    match /announcements/{announcementId} {
+      allow read: if signedIn();
+
+      allow create: if isTeacher()
+        && request.resource.data.keys().hasOnly([
+          "title", "body", "teacherId", "teacherName", "createdAt"
+        ])
+        && request.resource.data.teacherId == request.auth.uid
+        && request.resource.data.teacherName == currentUser().data.name
+        && validShortText(request.resource.data.title, 120)
+        && request.resource.data.title.size() > 0
+        && validShortText(request.resource.data.body, 5000)
+        && request.resource.data.body.size() > 0
+        && validTimestamp(request.resource.data.createdAt);
+
+      allow update: if isAdmin() || (
+        isTeacher()
+        && resource.data.teacherId == request.auth.uid
+        && request.resource.data.teacherId == resource.data.teacherId
+        && request.resource.data.teacherName == currentUser().data.name
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+          "title", "body", "teacherName"
+        ])
+        && validShortText(request.resource.data.title, 120)
+        && request.resource.data.title.size() > 0
+        && validShortText(request.resource.data.body, 5000)
+        && request.resource.data.body.size() > 0
+      );
+
+      allow delete: if isAdmin() || (isTeacher() && resource.data.teacherId == request.auth.uid);
+    }
+
+    // Rate-limit documents are server-only. They are intentionally unreachable from clients.
+    match /_rateLimits/{rateLimitId} {
+      allow read, write: if false;
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

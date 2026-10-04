@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#080a0f">
+<title>Beray | Öğrenci</title>
+<link rel="stylesheet" href="./style.css">
+<link rel="manifest" href="./manifest.webmanifest">
+<meta name="theme-color" content="#080a0f">
+<link rel="apple-touch-icon" href="./icons/icon-192.png">
+</head>
+<body>
+<div id="studentApp" class="app hidden">
+  <aside id="studentSidebar" class="sidebar">
+    <div class="sidebar-brand"><span class="moon-mark"></span><div><strong>BERA<span>Y</span></strong><small>EĞİTİM PLATFORMU</small></div></div>
+    <div class="student-chip"><div id="studentAvatar" class="avatar">B</div><div><strong id="studentName">Öğrenci</strong><small>Öğrenci</small></div></div>
+    <nav class="nav">
+      <button class="nav-btn student-nav active" data-page="dashboard">🏠<span>Ana Sayfa</span></button>
+      <button class="nav-btn student-nav" data-page="courses">📚<span>Dersler</span></button>
+      <button class="nav-btn student-nav" data-page="tests">📝<span>Testler</span></button>
+      <button class="nav-btn student-nav" data-page="results">📊<span>Sonuçlar</span></button>
+      <button class="nav-btn student-nav" data-page="announcements">📢<span>Duyurular</span><b id="announcementBadge" class="badge hidden">0</b></button>
+      <button class="nav-btn student-nav" data-page="profile">👤<span>Profil</span></button>
+    </nav>
+    <div class="sidebar-foot"><div class="mini-help"><span>?</span><div><strong>Beray Destek</strong><small>Her zaman yanındayız.</small></div></div><button id="studentLogout" class="logout">🚪 Çıkış Yap</button></div>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <div class="top-left"><button id="studentMenu" class="mobile-menu">☰</button><div><small>BERAY / ÖĞRENCİ</small><h3 id="studentPageTitle">Ana Sayfa</h3></div></div>
+      <div class="top-actions"><button id="installPWAButton" class="install-pwa-button hidden" type="button">📲 Uygulamayı Yükle</button><button id="notificationButton" class="icon-btn">◉<b id="notificationCount" class="badge hidden">0</b></button></div>
+    </header>
+
+    <div class="content">
+      <section id="student-dashboard" class="view student-page active">
+        <div id="studentClassSetup" class="card hidden" style="margin-bottom:18px">
+          <span class="kicker">BAŞLANGIÇ</span>
+          <h2>Sınıfını seç</h2>
+          <p class="muted">Bir kez seç. Sonrasında sana uygun ders ve testleri otomatik gösterelim.</p>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:14px">
+            <select id="studentClassSelect" style="min-width:220px;padding:12px;border-radius:11px;border:1px solid #2b303a;background:#0a0c11;color:#fff">
+              <option value="">Sınıf seç</option>
+              <option value="5">5. Sınıf</option><option value="6">6. Sınıf</option><option value="7">7. Sınıf</option><option value="8">8. Sınıf</option>
+              <option value="9">9. Sınıf</option><option value="10">10. Sınıf</option><option value="11">11. Sınıf</option><option value="12">12. Sınıf</option>
+            </select>
+            <button id="saveStudentClass" class="primary-button">Sınıfımı Kaydet</button>
+          </div>
+        </div>
+        <div class="hero dashboard-hero"><div><span class="kicker">BUGÜNÜN HEDEFİ</span><h1>Merhaba, <span id="welcomeName">Öğrenci</span> 👋</h1><p>Bir adım daha ilerle. Beray seninle.</p><div class="hero-actions"><button class="primary" data-go-page="courses">📚 Derslere Başla →</button><button class="ghost" data-go-page="tests">📝 Bir Test Çöz</button></div></div><div class="hero-orbit"><span>☾</span></div></div>
+        <div class="stats"><article class="stat"><span class="stat-icon">▣</span><div><small>✅ Tamamlanan Ders</small><strong id="dashboardLessons">0</strong></div></article><article class="stat"><span class="stat-icon">☑</span><div><small>📝 Çözülen Test</small><strong id="dashboardTests">0</strong></div></article><article class="stat"><span class="stat-icon">↗</span><div><small>📈 Ortalama Başarı</small><strong id="dashboardAverage">0%</strong></div></article><article class="stat"><span class="stat-icon gold">★</span><div><small>⭐ Beray Puanı</small><strong id="dashboardPoints">0</strong></div></article></div>
+        <div class="section-head"><div><span class="kicker">EĞİTİM MERKEZİ</span><h2>Öne çıkan dersler</h2><p>Bugün başlayabileceğin içerikler.</p></div><button class="ghost" data-go-page="courses">Tümünü Gör →</button></div>
+        <div id="dashboardCourses" class="course-grid"></div>
+        <div class="section-head mt"><div><span class="kicker">SINAV MERKEZİ</span><h2>Teste hazır mısın?</h2><p>Kendini ölç, sonucunu gör.</p></div></div>
+        <div id="dashboardTestsList" class="stack"></div>
+      </section>
+
+      <section id="student-courses" class="view student-page"><div class="page-head"><div><span class="kicker">EĞİTİM</span><h1>📚 Ders Merkezi</h1><p>Önce sınıfını seç; sana uygun dersler otomatik filtrelensin.</p></div><div style="display:flex;gap:10px;flex-wrap:wrap"><select id="courseFilter" aria-label="Sınıf" style="padding:11px;border-radius:10px;border:1px solid #2b303a;background:#0a0c11;color:#fff"><option value="">Sınıfım</option></select><div class="search"><span>🔎</span><input id="courseSearch" placeholder="Ders ara..."></div></div></div><div id="studentCourses" class="course-grid large"></div></section>
+
+      <section id="student-tests" class="view student-page"><div class="page-head"><div><span class="kicker">SINAVLAR</span><h1>📝 Test Merkezi</h1><p>Sınıfına uygun testleri çöz ve performansını takip et.</p></div></div><div class="filter-row"><button class="filter class-filter active" data-class-filter="mine">Sınıfım</button><button class="filter class-filter" data-class-filter="all">Tüm Sınıflar</button><button class="filter active" data-test-filter="all">Tümü</button><button class="filter" data-test-filter="new">Çözülmemiş</button><button class="filter" data-test-filter="done">Çözdüklerim</button></div><div id="studentTests" class="stack"></div></section>
+
+      <section id="student-results" class="view student-page"><div class="page-head"><div><span class="kicker">PERFORMANS</span><h1>📊 Sonuçlarım</h1><p>Gelişimini rakamlarla takip et.</p></div></div><div class="result-summary"><div><small>Ortalama</small><strong id="resultAverage">0%</strong></div><div><small>En yüksek</small><strong id="resultBest">0%</strong></div><div><small>Sınav</small><strong id="resultTotal">0</strong></div></div><div id="studentResults" class="stack"></div></section>
+
+      <section id="student-announcements" class="view student-page"><div class="page-head"><div><span class="kicker">BERAY</span><h1>📢 Duyurular</h1><p>Öğretmenlerinden gelen son gelişmeler.</p></div></div><div id="studentAnnouncements" class="announcement-list"></div></section>
+
+      <section id="student-profile" class="view student-page"><div class="page-head"><div><span class="kicker">HESAP</span><h1>👤 Profilim</h1><p>Beray hesabını görüntüle.</p></div></div><div class="profile-layout"><article class="profile-main panel"><div class="profile-cover"></div><div class="profile-body"><div id="profileAvatar" class="profile-avatar">B</div><h2 id="profileName">Öğrenci</h2><p id="profileEmail" class="muted">-</p><div class="profile-metrics"><div><strong id="profilePoints">0</strong><span>Puan</span></div><div><strong id="profileLessons">0</strong><span>Ders</span></div><div><strong id="profileTests">0</strong><span>Test</span></div></div></div></article><article class="panel profile-side"><h3>✏️ Profili Düzenle</h3><label>Ad Soyad</label><input id="profileEditName" type="text" maxlength="80" placeholder="Ad Soyad"><label style="margin-top:12px">Sınıf</label><select id="profileEditGrade"><option value="">Sınıf seç</option><option value="5">5. Sınıf</option><option value="6">6. Sınıf</option><option value="7">7. Sınıf</option><option value="8">8. Sınıf</option><option value="9">9. Sınıf</option><option value="10">10. Sınıf</option><option value="11">11. Sınıf</option><option value="12">12. Sınıf</option></select><button id="saveProfile" class="primary-button" style="margin-top:12px">💾 Kaydet</button><hr><h3>🟢 Hesap Durumu</h3><div class="status-line"><span class="dot"></span><div><strong>Aktif Öğrenci</strong><p>Beray Eğitim Platformu</p></div></div></article></div></section>
+
+      <section id="student-quiz" class="view student-page"><button id="backFromQuiz" class="back">← Testlere dön</button><div id="quizBox" class="quiz-box panel"></div></section>
+    </div>
+  </main>
+</div>
+<div id="notificationPanel" class="notification-panel hidden"><div class="notif-head"><strong>Bildirimler</strong><button id="closeNotificationPanel">×</button></div><div id="notificationList"></div></div>
+<div id="studentLoading" class="loading-screen"><div class="loading-mark"><span class="moon-mark"></span><strong>BERA<span>Y</span></strong></div><div class="spinner"></div><p>Beray hazırlanıyor...</p></div>
+<div id="studentToast" class="toast"></div>
+<script type="module" src="./app.js"></script>
+</body></html>

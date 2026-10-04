@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#080a0f">
+<title>Beray | Öğretmen</title>
+<link rel="stylesheet" href="./style.css">
+<link rel="manifest" href="./manifest.webmanifest">
+<meta name="theme-color" content="#080a0f">
+<link rel="apple-touch-icon" href="./icons/icon-192.png">
+</head>
+<body>
+<div id="teacherApp" class="app hidden">
+  <aside id="teacherSidebar" class="sidebar">
+    <div class="sidebar-brand"><span class="moon-mark"></span><div><strong>BERA<span>Y</span></strong><small id="teacherRoleLabel">ÖĞRETMEN PANELİ</small></div></div>
+    <div class="student-chip"><div id="sidebarTeacherAvatar" class="avatar">B</div><div><strong id="sidebarTeacherName">Öğretmen</strong><small id="sidebarTeacherRole">Öğretmen</small></div></div>
+    <nav class="nav">
+      <button class="nav-btn teacher-nav active" data-page="dashboard">⌂<span>Genel Bakış</span></button>
+      <button class="nav-btn teacher-nav" data-page="courses">📚<span>Dersler</span></button>
+      <button class="nav-btn teacher-nav" data-page="lessons">▤<span>Konular</span></button>
+      <button class="nav-btn teacher-nav" data-page="tests">📝<span>Testler</span></button>
+      <button class="nav-btn teacher-nav" data-page="students">◈<span>Öğrenciler</span></button>
+      <button class="nav-btn teacher-nav" data-page="results">📊<span>Sonuçlar</span></button>
+      <button class="nav-btn teacher-nav" data-page="announcements">📢<span>Duyurular</span></button>
+      <button id="adminUsersNav" class="nav-btn teacher-nav hidden" data-page="users">⚙<span>Kullanıcılar</span></button>
+    </nav>
+    <div class="sidebar-foot"><div class="mini-help"><span>?</span><div><strong>Beray Destek</strong><small>Her zaman yanındayız.</small></div></div><button id="teacherLogout" class="logout">🚪 Çıkış Yap</button></div>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <div class="top-left"><button id="teacherMenu" class="mobile-menu">☰</button><div><small>BERAY / ÖĞRETMEN</small><h3 id="teacherPageTitle">Genel Bakış</h3></div></div>
+      <div class="top-actions"><div class="user-mini"><div id="teacherAvatar" class="avatar">B</div><div class="user-mini-info"><strong id="teacherName">Öğretmen</strong><small id="teacherRole">Öğretmen</small></div></div></div>
+    </header>
+
+    <div class="content">
+      <section id="teacher-dashboard" class="view teacher-page active">
+        <div class="hero dashboard-hero"><div><span class="kicker">BERAY YÖNETİM</span><h1>Hoş geldin, <span id="dashboardTeacherName">Öğretmen</span> 👋</h1><p>Ders, konu ve testlerini yönet; öğrencilerinin gelişimini takip et.</p></div><div class="hero-orbit"><span>☾</span></div></div>
+        <div class="stats">
+          <article class="stat"><span class="stat-icon">◈</span><div><small>Öğrenci</small><strong id="adminStudentCount">0</strong></div></article>
+          <article class="stat"><span class="stat-icon">▣</span><div><small>Ders</small><strong id="adminCourseCount">0</strong></div></article>
+          <article class="stat"><span class="stat-icon">☑</span><div><small>Test</small><strong id="adminTestCount">0</strong></div></article>
+          <article class="stat"><span class="stat-icon">◫</span><div><small>Sonuç</small><strong id="adminResultCount">0</strong></div></article>
+        </div>
+      </section>
+
+      <section id="teacher-courses" class="view teacher-page">
+        <div class="page-head"><div><span class="kicker">İÇERİK</span><h1>Dersler</h1><p>Platformdaki tüm dersleri yönet.</p></div><button class="primary" data-modal="course">➕ Yeni Ders</button></div>
+        <div id="teacherCourses" class="course-grid"></div>
+      </section>
+
+      <section id="teacher-lessons" class="view teacher-page">
+        <div class="page-head"><div><span class="kicker">DERS İÇERİĞİ</span><h1>📖 Konular</h1><p>Derslere bağlı konu anlatımlarını yönet.</p></div><button class="primary" data-modal="lesson">➕ Yeni Konu</button></div>
+        <div id="teacherLessons" class="stack"></div>
+      </section>
+
+      <section id="teacher-tests" class="view teacher-page">
+        <div class="page-head"><div><span class="kicker">SINAV</span><h1>📝 Testler</h1><p>Öğrencilerin çözeceği testleri oluştur.</p></div><button class="primary" data-modal="test">➕ Yeni Test</button></div>
+        <div id="teacherTests" class="stack"></div>
+      </section>
+
+      <section id="teacher-students" class="view teacher-page">
+        <div class="page-head"><div><span class="kicker">TAKİP</span><h1>👨‍🎓 Öğrenciler</h1><p>Kayıtlı öğrencilerin ilerlemesini gör.</p></div></div>
+        <div id="teacherStudents"></div>
+      </section>
+
+      <section id="teacher-results" class="view teacher-page">
+        <div class="page-head"><div><span class="kicker">PERFORMANS</span><h1>📊 Sonuçlar</h1><p>Test sonuçlarını incele.</p></div><button id="refreshTeacherResults" class="ghost-button">🔄 Sonuçları Yenile</button></div>
+        <div class="result-summary"><div><small>Ortalama</small><strong id="teacherAverage">0%</strong></div><div><small>En yüksek</small><strong id="teacherBest">0%</strong></div><div><small>Sonuç</small><strong id="teacherTotalResults">0</strong></div></div>
+        <div id="teacherResults"></div>
+      </section>
+
+      <section id="teacher-announcements" class="view teacher-page">
+        <div class="page-head"><div><span class="kicker">İLETİŞİM</span><h1>📢 Duyurular</h1><p>Öğrencilere duyuru paylaş.</p></div><button class="primary" data-modal="announcement">➕ Yeni Duyuru</button></div>
+        <div id="teacherAnnouncements" class="announcement-list"></div>
+      </section>
+
+      <section id="teacher-users" class="view teacher-page">
+        <div class="page-head"><div><span class="kicker">ADMİN</span><h1>👥 Kullanıcılar</h1><p>Kullanıcı rollerini yönet.</p></div><div style="display:flex;gap:8px;flex-wrap:wrap"><button id="seedCurriculumButton" class="ghost-button">📚 Müfredatı Firestore'a Yükle</button><button id="migrateLegacyTests" class="ghost-button">🔒 Eski Testleri Güvenli Hale Getir</button></div></div>
+        <div id="teacherUsers"></div>
+      </section>
+    </div>
+  </main>
+</div>
+
+<div id="modal" class="modal hidden"><div class="modal-box"><button id="closeModal" class="modal-close">×</button><div id="modalBody"></div></div></div>
+<div id="teacherLoading" class="loading-screen"><div class="loading-mark"><span class="moon-mark"></span><strong>BERA<span>Y</span></strong></div><div class="spinner"></div><p>Öğretmen paneli hazırlanıyor...</p></div>
+<div id="teacherToast" class="toast"></div>
+<script type="module" src="./app.js"></script>
+</body></html>
