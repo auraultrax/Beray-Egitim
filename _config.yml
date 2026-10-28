@@ -1,0 +1,8 @@
+# Site dağıtımında sunucu cevap bankalarını ve backend dosyalarını yayımlama.
+exclude:
+  - supabase/
+  - functions/
+  - tools/
+  - SUPABASE_TUM_KURULUM.sql
+  - supabase_education_setup.sql
+  - SUPABASE-KURULUM.md

@@ -1,0 +1,4 @@
+project_id = "rzdvezdccgkfzfpizwmj"
+
+[functions.aurax-login-bridge]
+verify_jwt = false
