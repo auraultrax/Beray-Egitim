@@ -92,3 +92,21 @@ $('auraxForm')?.addEventListener('submit', async (event) => {
     }
   }
 });
+
+// Apple ile giriş / kayıt (Supabase OAuth)
+document.getElementById('appleBtn')?.addEventListener('click', async () => {
+  try {
+    const { error } = await supabaseClient.auth.signInWithOAuth({
+      provider: 'apple',
+      options: { redirectTo: window.location.origin + window.location.pathname }
+    });
+    if (error) throw error;
+  } catch (e) {
+    console.error('Apple giriş:', e);
+    const box = document.getElementById('authMessage') || document.getElementById('loginError');
+    if (box) {
+      box.textContent = 'Apple ile giriş başlatılamadı: ' + (e.message || 'Supabase Apple sağlayıcısını kontrol et.');
+      box.classList.remove('hidden');
+    }
+  }
+});

@@ -9,6 +9,7 @@
 <link rel="manifest" href="./manifest.webmanifest">
 <meta name="theme-color" content="#6c4cf5">
 <link rel="apple-touch-icon" href="./icons/icon-192.png">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body class="landing">
 <div class="landing-glow g1"></div><div class="landing-glow g2"></div>
@@ -42,7 +43,8 @@
       <button class="primary full" type="submit">Hesap Oluştur <span>→</span></button>
     </form>
     <div class="auth-divider">ya da</div>
-    <button id="auraxBtn" type="button" class="primary full aurax-btn"><span class="aurax-x"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.4" stroke-linecap="round"><path d="M6 6c4 4 8 8 12 12"/><path d="M18 6C14 10 10 14 6 18" stroke-dasharray="1 0"/><circle cx="12" cy="12" r="1.6" fill="#fff" stroke="none"/></svg></span> Aura X ile Giriş Yap</button>
+    <button id="appleBtn" type="button" class="primary full" style="background:#000;margin-top:8px;"><i class="fa-brands fa-apple"></i> Apple ile Giriş / Kayıt</button>
+        <button id="auraxBtn" type="button" class="primary full aurax-btn"><span class="aurax-x"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.4" stroke-linecap="round"><path d="M6 6c4 4 8 8 12 12"/><path d="M18 6C14 10 10 14 6 18" stroke-dasharray="1 0"/><circle cx="12" cy="12" r="1.6" fill="#fff" stroke="none"/></svg></span> Aura X ile Giriş Yap</button>
     <form id="auraxForm" class="hidden" style="margin-top:10px">
       <label>Aura X kullanıcı adı<input id="auraxUser" autocomplete="username" required></label>
       <label>Aura X şifresi<input id="auraxPass" type="password" autocomplete="current-password" required></label>
