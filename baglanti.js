@@ -69,7 +69,8 @@ $('auraxForm')?.addEventListener('submit', async (event) => {
     const bridgeResult = await bridgeResponse.json().catch(() => ({}));
     const bridge = bridgeResult?.data;
     if (!bridgeResponse.ok || !bridge?.email || !bridge?.tokenHash) {
-      throw new Error(bridgeResult?.error?.message || bridgeResult?.error || 'Beray tarafındaki bağlantı servisi henüz yayımlanmamış. aurax-login-bridge fonksiyonunu Beray Supabase projesine yayımla.');
+      const detail = bridgeResult?.error?.message || bridgeResult?.error || '';
+      throw new Error(detail || 'Beray bağlantı servisi henüz yayımlanmamış. Terminalde: supabase functions deploy aurax-login-bridge --project-ref rzdvezdccgkfzfpizwmj --no-verify-jwt');
     }
 
     // 3) Tek kullanımlık token Beray projesine ait; böylece eğitim API'si gerçek Beray oturumunu görür.
@@ -85,7 +86,12 @@ $('auraxForm')?.addEventListener('submit', async (event) => {
   } catch (error) {
     console.error('Aura X -> Beray giriş köprüsü:', error);
     window.__BERAY_AURAX_LOGIN__ = false;
-    showMessage(error?.message || 'Aura X ile giriş yapılamadı.');
+    const msg = String(error?.message || error || '');
+    if (/Failed to fetch|NetworkError|fetch/i.test(msg)) {
+      showMessage('Aura X doğrulandı ama Beray sunucusuna ulaşılamadı. aurax-login-bridge fonksiyonunu Supabase\'e yayımla: supabase functions deploy aurax-login-bridge --project-ref rzdvezdccgkfzfpizwmj --no-verify-jwt');
+    } else {
+      showMessage(msg || 'Aura X ile giriş yapılamadı.');
+    }
     if (button) {
       button.disabled = false;
       button.textContent = button.dataset.originalText || 'Aura X hesabımı doğrula →';
