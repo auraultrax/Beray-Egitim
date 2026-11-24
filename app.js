@@ -2617,6 +2617,85 @@ async function sharePointsFromUI(targetUid, amount) {
 }
 
 /* =========================================================
+   ÖĞRETMEN STATE
+========================================================= */
+
+const teacherState = {
+    profile: null,
+    courses: [],
+    lessons: [],
+    tests: [],
+    students: [],
+    results: [],
+    announcements: [],
+    meetings: [],
+    users: []
+};
+
+
+/* =========================================================
+   ÖĞRETMEN BAŞLAT
+========================================================= */
+
+async function initializeTeacher(user, profile) {
+
+    hide($("teacherLoading"));
+    show($("teacherApp"));
+
+    teacherState.profile = profile;
+
+    const name = profile.name || user.displayName || "Öğretmen";
+    const initial = name.charAt(0).toUpperCase();
+
+    $("teacherName").textContent = name;
+    $("dashboardTeacherName").textContent = name.split(" ")[0];
+    $("teacherAvatar").textContent = initial;
+    $("sidebarTeacherAvatar").textContent = initial;
+    $("sidebarTeacherName").textContent = name;
+
+    const role = profile.role === "admin" ? "Admin" : "Öğretmen";
+    $("teacherRole").textContent = role;
+    $("sidebarTeacherRole").textContent = role;
+    $("teacherRoleLabel").textContent = profile.role === "admin" ? "ADMİN PANELİ" : "ÖĞRETMEN PANELİ";
+
+    if (profile.role === "admin") {
+        show($("adminUsersNav"));
+    }
+
+    $("teacherLogout").onclick = () => signOut(auth);
+
+    $("teacherMenu").onclick = () => $("teacherSidebar")?.classList.toggle("open");
+
+    document.querySelectorAll(".teacher-nav").forEach(button => {
+        button.onclick = () => openTeacherPage(button.dataset.page, button);
+    });
+
+    document.querySelectorAll("[data-modal]").forEach(button => {
+        button.onclick = () => openTeacherModal(button.dataset.modal);
+    });
+
+    $("closeModal")?.addEventListener("click", () => hide($("modal")));
+
+    $("refreshTeacherResults")?.addEventListener("click", async () => {
+        try {
+            await refreshTeacher();
+            toast("Sonuçlar yenilendi. ✅", "teacher");
+        } catch (error) {
+            toast(error?.message || "Sonuçlar yenilenemedi.", "teacher");
+        }
+    });
+
+    try {
+        await refreshTeacher();
+    } catch (error) {
+        // Veri yüklenemese bile panel açılsın; boş beyaz sayfa yerine hata gösterilsin.
+        console.error("Öğretmen verileri yüklenemedi:", error);
+        toast(error?.message || "Öğretmen verileri yüklenemedi.", "teacher");
+    }
+}
+
+
+/* =========================================================
    ÖĞRETMEN SAYFALARI
 ========================================================= */
 
