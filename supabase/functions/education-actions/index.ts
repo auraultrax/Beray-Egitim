@@ -1,6 +1,20 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
-import readyBank from './ready_bank.json' with { type: 'json' };
-import curriculumSeed from './curriculum_seed.json' with { type: 'json' };
+
+// Hazır test bankası ve müfredat tohumu büyük JSON dosyalarıdır. Fonksiyon tek dosyayla yayımlanabilsin diye
+// ilk kullanımda BANK_BASE_URL adresinden okunur ve bellekte önbelleğe alınır.
+// Depo private yapılırsa BANK_BASE_URL'yi erişilebilir bir adrese ayarla veya fonksiyonu JSON dosyalarıyla
+// birlikte CLI ile yayımla (README).
+const BANK_BASE_URL = (Deno.env.get('BANK_BASE_URL') || 'https://raw.githubusercontent.com/auraultrax/Beray-Egitim/main/supabase/functions/education-actions').replace(/\/+$/, '');
+const bankCache: Record<string, any> = {};
+async function loadBank(name: 'ready_bank' | 'curriculum_seed'): Promise<any> {
+  if (bankCache[name]) return bankCache[name];
+  let response: Response;
+  try { response = await fetch(`${BANK_BASE_URL}/${name}.json`); }
+  catch (_) { throw new ApiError(503, 'bank-unavailable', 'Test bankasına ulaşılamadı. Biraz sonra tekrar dene.'); }
+  if (!response.ok) throw new ApiError(503, 'bank-unavailable', `Test bankası okunamadı (HTTP ${response.status}).`);
+  bankCache[name] = await response.json();
+  return bankCache[name];
+}
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -143,14 +157,14 @@ Deno.serve(async (req) => {
         break;
       }
       case 'getReadyTest': {
-        const testId = clean(body.testId,200), entry = (readyBank as Record<string, any>)[testId];
+        const testId = clean(body.testId,200), entry = ((await loadBank('ready_bank')) as Record<string, any>)[testId];
         if (!entry) throw new ApiError(404,'not-found','Hazır test bulunamadı. Müfredat test bankası güncel değil.');
         output = { questions: entry.questions };
         break;
       }
       case 'checkReadyTest': {
         requireStudent(profile);
-        const testId = clean(body.testId,200), entry = (readyBank as Record<string, any>)[testId];
+        const testId = clean(body.testId,200), entry = ((await loadBank('ready_bank')) as Record<string, any>)[testId];
         const answers = asArray(body.answers).map(Number);
         if (!entry || answers.length !== asArray(entry.answers).length || !answers.every((v) => Number.isInteger(v) && v >= 0 && v <= 3)) throw new ApiError(400,'invalid-argument','Test cevapları geçersiz veya eksik.');
         const wrongFocus = [...new Set(answers.flatMap((v,i) => v === Number(entry.answers[i]) ? [] : [clean(entry.questions?.[i]?.focus,200)]).filter(Boolean))].slice(0,6);
@@ -234,7 +248,7 @@ Deno.serve(async (req) => {
       }
       case 'seedCurriculum': {
         requireAdmin(profile);
-        const seed = curriculumSeed as any;
+        const seed = (await loadBank('curriculum_seed')) as any;
         const items: Array<{collection_name:string; id:string; data:Record<string,any>}> = [];
         for (const c of asArray(seed.courses)) items.push(recordRow('courses',String(c.id),{ ...c,createdAt:timestamp() }));
         for (const l of asArray(seed.lessons)) items.push(recordRow('lessons',String(l.id),{ ...l,createdAt:timestamp() }));

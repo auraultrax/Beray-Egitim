@@ -16,14 +16,14 @@
 
 1. `supabase-compat.js` içindeki `SUPABASE_URL` ve `SUPABASE_PUBLISHABLE_KEY` Forever'ın Supabase projesiyle aynı olmalıdır.
 2. Eğitim tabloları ve fonksiyonları Forever projesinde kuruludur. Yeni bir projeye kuruyorsan Forever deposundaki `SUPABASE_TUM_KURULUM.sql` ve eğitim SQL'ini (`supabase_education_setup.sql`) çalıştır.
-3. `education-actions` Edge Function'ını yayımla (test oluşturma/puanlama, rol yönetimi, müfredat). Supabase CLI kurulu ve giriş yapılmış bir bilgisayarda bu deponun klasöründe:
+3. `education-actions` Edge Function'ı (test oluşturma/puanlama, kullanıcı arama, takip, rol yönetimi, müfredat) Forever projesinde yayımlıdır. Yeniden yayımlamak için Supabase CLI kurulu ve giriş yapılmış bir bilgisayarda bu deponun klasöründe:
 
    ```bash
    supabase login
    supabase functions deploy education-actions --project-ref zblbsjmtituericpmazj
    ```
 
-   Fonksiyon `ready_bank.json` ve `curriculum_seed.json` dosyalarını aynı klasörden paketler; bu iki dosyayı silmeyin. `username-login` ve `username-available` fonksiyonları Forever tarafında zaten yayımlıdır.
+   `ready_bank.json` ve `curriculum_seed.json` fonksiyon paketine dahil edilmez; ilk kullanımda `BANK_BASE_URL` adresinden okunur ve önbelleğe alınır. Varsayılan adres bu deponun GitHub'daki `main` dalıdır. Depoyu private yaparsan Supabase → Edge Functions → Secrets bölümüne erişilebilir bir adresle `BANK_BASE_URL` ekle. `username-login` ve `username-available` fonksiyonları Forever tarafında zaten yayımlıdır.
 4. Supabase Dashboard → Authentication → Sign In / Providers bölümünde e-posta/şifre yönteminin açık olduğuna bak. E-posta doğrulaması açıksa kullanıcı önce gelen bağlantıya tıklamalıdır.
 5. Siteyi HTTPS üzerinden yayımla (GitHub Pages). `_config.yml` sunucu dosyalarını Pages'ten dışlar.
 
