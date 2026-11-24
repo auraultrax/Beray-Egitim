@@ -848,10 +848,41 @@ onAuthStateChanged(
                 hide($("teacherLoading"));
             }
 
+            // Sessiz beyaz sayfa yerine gerçek hatayı göster.
+            if (isStudent || isTeacher) showFatalError(error);
+
         }
 
     }
 );
+
+function showFatalError(error) {
+    try {
+        if ($("beray-fatal")) return;
+        const box = document.createElement("div");
+        box.id = "beray-fatal";
+        box.style.cssText = "position:fixed;inset:0;z-index:99999;display:grid;place-items:center;background:#f5f3ff;padding:24px;font-family:Nunito,system-ui,sans-serif";
+        const msg = String(error?.message || error || "Bilinmeyen hata");
+        box.innerHTML = `<div style="max-width:520px;background:#fff;border-radius:18px;padding:28px;box-shadow:0 10px 40px rgba(60,40,160,.15);color:#1b1646">
+            <h2 style="margin:0 0 8px">Sayfa açılamadı</h2>
+            <p style="margin:0 0 12px;color:#5b5780">Bir hata oluştu. Aşağıdaki mesajı destek için kopyalayabilirsin.</p>
+            <pre style="white-space:pre-wrap;word-break:break-word;background:#f3f1ff;border-radius:10px;padding:12px;font-size:13px;margin:0 0 16px"></pre>
+            <button id="beray-fatal-retry" style="padding:10px 16px;border:0;border-radius:10px;background:#6c4cf5;color:#fff;font-weight:800;cursor:pointer">Yeniden dene</button>
+            <button id="beray-fatal-out" style="padding:10px 16px;border:0;border-radius:10px;background:#e9e6ff;color:#1b1646;font-weight:800;cursor:pointer;margin-left:8px">Çıkış yap</button>
+        </div>`;
+        box.querySelector("pre").textContent = `${msg}${error?.code ? `\n(kod: ${error.code})` : ""}`;
+        document.body.appendChild(box);
+        $("beray-fatal-retry").onclick = () => location.reload();
+        $("beray-fatal-out").onclick = async () => { try { await signOut(auth); } catch (_) {} location.href = "./index.html"; };
+    } catch (_) { /* son çare: sessiz kal */ }
+}
+
+window.addEventListener("error", (event) => {
+    if ((isStudent || isTeacher) && event?.error) showFatalError(event.error);
+});
+window.addEventListener("unhandledrejection", (event) => {
+    if (isStudent || isTeacher) console.error("İşlenmeyen söz hatası:", event.reason);
+});
 
 
 /* =========================================================
