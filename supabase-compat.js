@@ -4,8 +4,9 @@
  */
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
-export const SUPABASE_URL = 'https://rzdvezdccgkfzfpizwmj.supabase.co';
-export const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_yVs-2YKiVpZ2_wOmPZvdag_AzkxdABU';
+// Forever ile aynı Supabase projesi (AURA ULTRA X): Forever kullanıcıları aynı Auth hesabıyla girer.
+export const SUPABASE_URL = 'https://zblbsjmtituericpmazj.supabase.co';
+export const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_0XUjb6u_goYIjSB6m7vYsQ_hpyI0Az7';
 export const supabaseClient = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
   auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
 });

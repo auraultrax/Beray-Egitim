@@ -1,24 +1,24 @@
-/* Beray Eğitim <-> Aura X giriş köprüsü.
- * Bu dosya yalnızca Beray tarafındadır. Aura X uygulama dosyalarını değiştirmez.
- * Aura X kullanıcı adı/şifresi Aura X'in kendi username-login endpoint'inde doğrulanır.
- * Beray oturumu, Beray'in education-actions Edge Function'ından tek kullanımlık magic-link tokenı alınarak açılır.
+/* Beray Eğitim <-> Forever girişi.
+ * Beray ve Forever aynı Supabase projesini (Auth hesap havuzunu) kullanır; bu yüzden ayrı bir köprü gerekmez.
+ * Forever kullanıcı adı/şifresi Forever'ın username-login Edge Function'ında doğrulanır ve dönen oturum
+ * doğrudan Beray'in Supabase istemcisine yüklenir. Şifre yalnızca Supabase Auth'a gider.
  */
 import { SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, supabaseClient } from './supabase-compat.js';
 
-const AURAX_URL = 'https://zblbsjmtituericpmazj.supabase.co';
-const AURAX_PUBLISHABLE_KEY = 'sb_publishable_0XUjb6u_goYIjSB6m7vYsQ_hpyI0Az7';
 const $ = (id) => document.getElementById(id);
 
 function showMessage(message) {
-  const box = $('authMessage') || $('loginError');
+  const box = $('loginError') || $('authMessage');
   if (!box) return;
   box.textContent = String(message || 'Giriş yapılamadı.');
   box.classList.remove('hidden');
 }
 
+// "Forever ile Giriş Yap" düğmesi formu açıp kapatır.
 $('auraxBtn')?.addEventListener('click', () => {
   const form = $('auraxForm');
   if (form) form.classList.toggle('hidden');
+  $('auraxUser')?.focus();
 });
 
 $('auraxForm')?.addEventListener('submit', async (event) => {
@@ -27,74 +27,51 @@ $('auraxForm')?.addEventListener('submit', async (event) => {
   const button = form.querySelector('button[type="submit"]');
   const username = String($('auraxUser')?.value || '').trim();
   const password = String($('auraxPass')?.value || '');
+  $('loginError')?.classList.add('hidden');
+  $('authMessage')?.classList.add('hidden');
   if (!username || !password) {
-    showMessage('Aura X kullanıcı adı ve şifresi gerekli.');
+    showMessage('Forever kullanıcı adı ve şifresi gerekli.');
     return;
   }
   if (button) {
     button.disabled = true;
     button.dataset.originalText ||= button.textContent;
-    button.textContent = 'Aura X hesabı doğrulanıyor…';
+    button.textContent = 'Forever hesabı doğrulanıyor…';
   }
-  window.__BERAY_AURAX_LOGIN__ = true;
   try {
-    // 1) Kimlik bilgileri yalnızca Aura X'in mevcut giriş servisine gönderilir.
-    const auraResponse = await fetch(`${AURAX_URL}/functions/v1/username-login`, {
+    const response = await fetch(`${SUPABASE_URL}/functions/v1/username-login`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        apikey: AURAX_PUBLISHABLE_KEY
-      },
+      headers: { 'Content-Type': 'application/json', apikey: SUPABASE_PUBLISHABLE_KEY },
       body: JSON.stringify({ username, password })
     });
-    const auraResult = await auraResponse.json().catch(() => ({}));
-    const auraSession = auraResult?.session;
-    if (!auraResponse.ok || !auraSession?.access_token) {
-      throw new Error(auraResult?.error || 'Aura X kullanıcı adı veya şifresi doğrulanamadı.');
+    const result = await response.json().catch(() => ({}));
+    const session = result?.session;
+    if (!response.ok || !session?.access_token || !session?.refresh_token) {
+      throw new Error(result?.error || 'Forever kullanıcı adı veya şifresi doğrulanamadı.');
     }
 
-    // 2) Beray sunucusu Aura X tokenını doğrular; tarayıcı hiçbir servis-rol anahtarı taşımaz.
-    const bridgeResponse = await fetch(`${SUPABASE_URL}/functions/v1/aurax-login-bridge`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        apikey: SUPABASE_PUBLISHABLE_KEY
-      },
-      body: JSON.stringify({
-        action: 'auraxLoginBridge',
-        auraAccessToken: auraSession.access_token,
-        username
-      })
+    // Aynı Supabase projesi olduğu için oturum doğrudan Beray istemcisine yüklenir.
+    const { error: sessionError } = await supabaseClient.auth.setSession({
+      access_token: session.access_token,
+      refresh_token: session.refresh_token
     });
-    const bridgeResult = await bridgeResponse.json().catch(() => ({}));
-    const bridge = bridgeResult?.data;
-    if (!bridgeResponse.ok || !bridge?.email || !bridge?.tokenHash) {
-      const detail = bridgeResult?.error?.message || bridgeResult?.error || '';
-      throw new Error(detail || 'Beray bağlantı servisi henüz yayımlanmamış. Terminalde: supabase functions deploy aurax-login-bridge --project-ref rzdvezdccgkfzfpizwmj --no-verify-jwt');
-    }
-
-    // 3) Tek kullanımlık token Beray projesine ait; böylece eğitim API'si gerçek Beray oturumunu görür.
-    const { error: verifyError } = await supabaseClient.auth.verifyOtp({
-      email: bridge.email,
-      token_hash: bridge.tokenHash,
-      type: 'magiclink'
-    });
-    if (verifyError) throw verifyError;
+    if (sessionError) throw sessionError;
 
     $('auraxPass').value = '';
-    window.location.href = './student.html';
+    showMessage('Giriş başarılı, yönlendiriliyorsun…');
+    // app.js oturumu algılayıp profile göre öğrenci/öğretmen sayfasına yönlendirir; takılırsa yedek yönlendirme.
+    setTimeout(() => { window.location.href = './student.html'; }, 4000);
   } catch (error) {
-    console.error('Aura X -> Beray giriş köprüsü:', error);
-    window.__BERAY_AURAX_LOGIN__ = false;
+    console.error('Forever girişi:', error);
     const msg = String(error?.message || error || '');
-    if (/Failed to fetch|NetworkError|fetch/i.test(msg)) {
-      showMessage('Aura X doğrulandı ama Beray sunucusuna ulaşılamadı. aurax-login-bridge fonksiyonunu Supabase\'e yayımla: supabase functions deploy aurax-login-bridge --project-ref rzdvezdccgkfzfpizwmj --no-verify-jwt');
+    if (/Failed to fetch|NetworkError|Load failed/i.test(msg)) {
+      showMessage('Forever sunucusuna ulaşılamadı. İnternet bağlantını kontrol edip tekrar dene.');
     } else {
-      showMessage(msg || 'Aura X ile giriş yapılamadı.');
+      showMessage(msg || 'Forever ile giriş yapılamadı.');
     }
     if (button) {
       button.disabled = false;
-      button.textContent = button.dataset.originalText || 'Aura X hesabımı doğrula →';
+      button.textContent = button.dataset.originalText || 'Forever hesabımı doğrula →';
     }
   }
 });
@@ -109,10 +86,6 @@ document.getElementById('appleBtn')?.addEventListener('click', async () => {
     if (error) throw error;
   } catch (e) {
     console.error('Apple giriş:', e);
-    const box = document.getElementById('authMessage') || document.getElementById('loginError');
-    if (box) {
-      box.textContent = 'Apple ile giriş başlatılamadı: ' + (e.message || 'Supabase Apple sağlayıcısını kontrol et.');
-      box.classList.remove('hidden');
-    }
+    showMessage('Apple ile giriş başlatılamadı: ' + (e.message || 'Supabase Apple sağlayıcısını kontrol et.'));
   }
 });

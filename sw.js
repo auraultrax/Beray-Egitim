@@ -1,4 +1,4 @@
-const CACHE_NAME = "beray-pwa-v3-fun";
+const CACHE_NAME = "beray-pwa-v4-forever";
 
 self.addEventListener("install", () => {
   self.skipWaiting();

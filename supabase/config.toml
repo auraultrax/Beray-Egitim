@@ -1,4 +1,6 @@
-project_id = "rzdvezdccgkfzfpizwmj"
+# Forever ile ortak Supabase projesi (AURA ULTRA X)
+project_id = "zblbsjmtituericpmazj"
 
-[functions.aurax-login-bridge]
-verify_jwt = false
+# education-actions çağıranın oturumunu kendisi doğrular (JWT gerekli).
+[functions.education-actions]
+verify_jwt = true

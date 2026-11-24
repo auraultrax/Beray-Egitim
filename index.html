@@ -35,7 +35,7 @@
     </form>
     <form id="registerForm" class="hidden">
       <label>Ad Soyad<input id="registerName" maxlength="80" placeholder="Ad Soyad" required></label>
-      <label>Kullanıcı adı<input id="registerUsername" type="text" minlength="3" maxlength="24" pattern="[A-Za-z0-9._-]{3,24}" autocomplete="username" placeholder="ornek_kullanici" required><small class="field-hint">3–24 karakter; harf, sayı, nokta, tire ve alt çizgi. Aura X'te alınmış adlar da kontrol edilir.</small></label>
+      <label>Kullanıcı adı<input id="registerUsername" type="text" minlength="3" maxlength="24" pattern="[A-Za-z0-9._-]{3,24}" autocomplete="username" placeholder="ornek_kullanici" required><small class="field-hint">3–24 karakter; harf, sayı, nokta, tire ve alt çizgi. Forever'da alınmış adlar da kontrol edilir.</small></label>
       <label>E-posta<input id="registerEmail" type="email" autocomplete="email" placeholder="ornek@mail.com" required></label>
       <label>Şifre<div class="input-with-button"><input id="registerPassword" type="password" minlength="6" autocomplete="new-password" placeholder="En az 6 karakter" required><button id="showRegisterPassword" type="button">Göster</button></div></label>
       <label>Şifre Tekrar<input id="registerPasswordConfirm" type="password" minlength="6" autocomplete="new-password" placeholder="Şifreyi tekrar gir" required></label>
@@ -44,11 +44,11 @@
     </form>
     <div class="auth-divider">ya da</div>
     <button id="appleBtn" type="button" class="primary full" style="background:#000;margin-top:8px;"><i class="fa-brands fa-apple"></i> Apple ile Giriş / Kayıt</button>
-        <button id="auraxBtn" type="button" class="primary full aurax-btn"><span class="aurax-x"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.4" stroke-linecap="round"><path d="M6 6c4 4 8 8 12 12"/><path d="M18 6C14 10 10 14 6 18" stroke-dasharray="1 0"/><circle cx="12" cy="12" r="1.6" fill="#fff" stroke="none"/></svg></span> Aura X ile Giriş Yap</button>
+        <button id="auraxBtn" type="button" class="primary full aurax-btn"><span class="aurax-x"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 12c-1.6-2.4-3.2-3.6-4.8-3.6a3.6 3.6 0 0 0 0 7.2c1.6 0 3.2-1.2 4.8-3.6zm0 0c1.6 2.4 3.2 3.6 4.8 3.6a3.6 3.6 0 0 0 0-7.2c-1.6 0-3.2 1.2-4.8 3.6z"/></svg></span> Forever ile Giriş Yap</button>
     <form id="auraxForm" class="hidden" style="margin-top:10px">
-      <label>Aura X kullanıcı adı<input id="auraxUser" autocomplete="username" required></label>
-      <label>Aura X şifresi<input id="auraxPass" type="password" autocomplete="current-password" required></label>
-      <button class="primary full" type="submit">Aura X hesabımı doğrula →</button>
+      <label>Forever kullanıcı adı<input id="auraxUser" autocomplete="username" required></label>
+      <label>Forever şifresi<input id="auraxPass" type="password" autocomplete="current-password" required></label>
+      <button class="primary full" type="submit">Forever hesabımı doğrula →</button>
     </form>
     <div id="loginError" class="auth-message hidden"></div>
     <div id="authMessage" class="auth-message hidden"></div>

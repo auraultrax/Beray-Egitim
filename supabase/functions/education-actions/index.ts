@@ -39,7 +39,7 @@ async function deleteRecord(collectionName: string, id: string) {
 }
 async function needProfile(uid: string) {
   const row = await getRecord('users', uid);
-  if (!row) throw new ApiError(412, 'failed-precondition', 'Eğitim profili bulunamadı. Önce Aura X ile giriş yap veya eğitim hesabını oluştur.');
+  if (!row) throw new ApiError(412, 'failed-precondition', 'Eğitim profili bulunamadı. Önce Forever ile giriş yap veya eğitim hesabını oluştur.');
   return row.data;
 }
 function requireStudent(profile: Record<string, any>) {
@@ -322,10 +322,10 @@ Deno.serve(async (req) => {
         output = { success:true,updated:rows.length }; break;
       }
       case 'deleteSelf': {
-        // Cleanup is used only if Education registration fails. Protect accounts already linked to Aura X.
+        // Cleanup is used only if Education registration fails. Protect accounts already linked to Forever.
         const { data: linked, error: linkedError } = await service.from('users').select('id').filter('data->>authUid','eq',uid).limit(1);
-        if (linkedError) throw new ApiError(500,linkedError.code || 'database_error','Aura X bağlantısı doğrulanamadı; hesap güvenli biçimde silinmedi.');
-        if (linked?.length) throw new ApiError(409,'account-linked','Bu kimlik Aura X hesabına bağlı; ortak hesap otomatik silinmedi.');
+        if (linkedError) throw new ApiError(500,linkedError.code || 'database_error','Forever bağlantısı doğrulanamadı; hesap güvenli biçimde silinmedi.');
+        if (linked?.length) throw new ApiError(409,'account-linked','Bu kimlik Forever hesabına bağlı; ortak hesap otomatik silinmedi.');
         const profile = await getRecord('users',uid);
         const usernameLower = clean(profile?.data?.usernameLower || profile?.data?.username || '',40).toLowerCase();
         if (usernameLower) {

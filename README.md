@@ -1,32 +1,35 @@
-# Beray Eğitim — Aura X + Supabase
+# Beray Eğitim — Forever + Supabase
 
-Öğrenci ve öğretmen panelli eğitim platformu. Kimlik doğrulama, kayıt, öğretmen işlemleri ve test değerlendirmesi için **Firebase kullanılmaz**; Aura X ile aynı Supabase projesi kullanılır.
+Öğrenci ve öğretmen panelli eğitim platformu. Firebase kullanılmaz; **Forever ile aynı Supabase projesi** (AURA ULTRA X, `zblbsjmtituericpmazj`) kullanılır. Forever hesabı olan herkes aynı hesapla Beray Eğitim'e girebilir.
 
 ## Site dosyaları
 
-`index.html`, `student.html`, `teacher.html`, `app.js`, `aurax-login.js`, `supabase-compat.js`, `curriculum.js`, içerik dosyaları, `style.css`, `manifest.webmanifest`, `sw.js` ve `icons/` site tarafıdır. `supabase/` içindeki SQL, Edge Function ve JSON bankaları sunucu/dağıtım dosyalarıdır; **web sitenin herkese açık köküne statik içerik olarak yayımlamayın**. Özellikle `ready_bank.json` cevap anahtarları sunucu tarafında kalmalıdır.
+`index.html`, `student.html`, `teacher.html`, `app.js`, `baglanti.js`, `supabase-compat.js`, `curriculum.js`, içerik dosyaları, `style.css`, `manifest.webmanifest`, `sw.js` ve `icons/` site tarafıdır. `supabase/` içindeki Edge Function ve JSON bankaları sunucu dosyalarıdır; **web sitenin herkese açık köküne statik içerik olarak yayımlamayın**. Özellikle `ready_bank.json` cevap anahtarları sunucu tarafında kalmalıdır.
+
+## Giriş ve kayıt nasıl çalışır?
+
+- **E-posta ile giriş / kayıt:** Doğrudan Supabase Auth. Forever'da kullandığın e-posta ve şifreyle de girilebilir.
+- **Forever ile Giriş Yap:** Forever kullanıcı adı ve şifresi `username-login` Edge Function'ında doğrulanır, dönen oturum Beray'e yüklenir. Ayrı bir köprü fonksiyonu gerekmez.
+- **Kayıt:** Kullanıcı adı, Forever'ın `username-available` fonksiyonuyla kontrol edilir; böylece aynı ad iki platformda ayrışmaz. Profil, SQL tetikleyicisiyle (`education_create_profile_for_auth_user`) otomatik oluşur.
 
 ## Kurulum
 
-1. Aura X projesiyle **aynı** Supabase projesini kullanın. `supabase-compat.js` içindeki `SUPABASE_URL` ve `SUPABASE_PUBLISHABLE_KEY` değerlerinin canlı projedeki URL ve publishable key ile aynı olduğunu doğrulayın.
-2. Aura X ZIP'inde bulunan `SUPABASE_TUM_KURULUM.sql` dosyasının tamamını Supabase Dashboard → SQL Editor bölümünde çalıştırın. Bu tek dosya Aura X tablolarını ve gerekli fonksiyonları, Education profillerini, yetkileri, güvenli test puanlama işlemlerini kurar. Ayrı SQL dosyalarını rastgele sırayla çalıştırmayın.
-3. Bilgisayarınızda Supabase CLI kurulu ve projenize giriş yapılmışken Aura X proje klasöründe çalıştırın:
+1. `supabase-compat.js` içindeki `SUPABASE_URL` ve `SUPABASE_PUBLISHABLE_KEY` Forever'ın Supabase projesiyle aynı olmalıdır.
+2. Eğitim tabloları ve fonksiyonları Forever projesinde kuruludur. Yeni bir projeye kuruyorsan Forever deposundaki `SUPABASE_TUM_KURULUM.sql` ve eğitim SQL'ini (`supabase_education_setup.sql`) çalıştır.
+3. `education-actions` Edge Function'ını yayımla (test oluşturma/puanlama, rol yönetimi, müfredat). Supabase CLI kurulu ve giriş yapılmış bir bilgisayarda bu deponun klasöründe:
 
    ```bash
    supabase login
-   supabase link --project-ref PROJE_REF
-   supabase functions deploy username-login --no-verify-jwt
-   supabase functions deploy username-available --no-verify-jwt
-   supabase functions deploy education-actions
+   supabase functions deploy education-actions --project-ref zblbsjmtituericpmazj
    ```
 
-   `PROJE_REF` değerini Supabase proje URL'sinin `https://...supabase.co` bölümündeki proje kimliğinden alın. `education-actions` fonksiyonu `ready_bank.json` ve `curriculum_seed.json` dosyalarını aynı klasörden paketler; bu iki dosyayı silmeyin.
-4. Supabase Dashboard → Authentication → Sign In / Providers alanında e-posta/şifre yönteminin etkin olduğuna bakın. E-posta doğrulaması açıksa kullanıcı önce gelen doğrulama bağlantısına tıklamalıdır.
-5. Aura X ve Eğitim sayfalarını HTTPS üzerinden yayımlayın. Statik site dağıtımı `supabase/` backend klasörünü ve SQL dosyalarını herkese açık siteye kopyalamamalıdır.
+   Fonksiyon `ready_bank.json` ve `curriculum_seed.json` dosyalarını aynı klasörden paketler; bu iki dosyayı silmeyin. `username-login` ve `username-available` fonksiyonları Forever tarafında zaten yayımlıdır.
+4. Supabase Dashboard → Authentication → Sign In / Providers bölümünde e-posta/şifre yönteminin açık olduğuna bak. E-posta doğrulaması açıksa kullanıcı önce gelen bağlantıya tıklamalıdır.
+5. Siteyi HTTPS üzerinden yayımla (GitHub Pages). `_config.yml` sunucu dosyalarını Pages'ten dışlar.
 
 ## İlk öğretmen/admin yetkisi
 
-Yeni hesaplar güvenli biçimde `student` rolüyle başlar. Kurulum, Aura X tarafında rolü gerçekten `admin` olan ayrılmış `A_UR_A_XX` hesabını mevcutsa otomatik olarak Eğitim yöneticisine eşler. Bu eşleşme yoksa ilk yönetici yetkisini yalnızca kendi hesabınızın gerçek Supabase Auth UUID'sini doğruladıktan sonra SQL Editor'de verin:
+Yeni hesaplar `student` rolüyle başlar. İlk yönetici yetkisini yalnızca kendi hesabının gerçek Supabase Auth UUID'sini doğruladıktan sonra SQL Editor'de ver:
 
 ```sql
 update public.education_records
@@ -34,11 +37,10 @@ set data = jsonb_set(data, '{role}', '"admin"'::jsonb, true)
 where collection_name = 'users' and id = 'AUTH_USER_UUID';
 ```
 
-`AUTH_USER_UUID` yerine Authentication → Users bölümündeki kendi kullanıcı UUID'nizi yazın. Sonraki öğretmen ve öğrenci rollerini öğretmen panelinden yönetin. Rastgele bir kullanıcıya admin rolü vermeyin.
+`AUTH_USER_UUID` yerine Authentication → Users bölümündeki kendi kullanıcı UUID'ni yaz. Sonraki öğretmen ve öğrenci rollerini öğretmen panelinden yönet.
 
 ## Notlar
 
-- Aura X hesabıyla Eğitim girişi aynı Supabase Auth oturumunu kullanır; Aura X kullanıcı adı girişi `username-login` Edge Function'ı üzerinden yapılır.
-- Öğretmen paneli test oluşturma, test silme, rol değiştirme ve müfredat yükleme işlemlerini `education-actions` sunucu fonksiyonuna gönderir.
-- Test cevap anahtarları tarayıcıya gönderilmez. Puan hesabı ve puan yazımı sunucu tarafındadır; aynı testin tekrar gönderilmesi ikinci kez puan kazandırmaz.
-- ZIP dosyalarını hazırlamak canlı Supabase projesinde SQL çalıştırmaz veya fonksiyonları yayımlamaz. Yukarıdaki kurulum adımları uygulanmadan çevrimiçi projede değişiklikler etkinleşmez.
+- Öğretmen paneli test oluşturma, test silme, rol değiştirme ve müfredat yükleme işlemlerini `education-actions` fonksiyonuna gönderir.
+- Test cevap anahtarları tarayıcıya gönderilmez; puan hesabı sunucudadır ve aynı test ikinci kez puan kazandırmaz.
+- Bu depodaki kod tek başına canlı Supabase projesinde SQL çalıştırmaz veya fonksiyon yayımlamaz.

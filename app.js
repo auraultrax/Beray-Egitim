@@ -1,6 +1,6 @@
 
 import {
-    auth, db, functions, supabaseClient,
+    auth, db, functions, supabaseClient, SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY,
     onAuthStateChanged, signInWithEmailAndPassword,
     createUserWithEmailAndPassword, updateProfile,
     sendPasswordResetEmail, deleteUser, signOut,
@@ -47,7 +47,7 @@ const callFunction = async (name, data = {}) => {
             } else if (["updateStudentProfile", "setStudentGrade"].includes(name)) {
                 message = "Profil güncellemesi tamamlanamadı. Supabase education-actions Edge Function günlüklerini ve RLS izinlerini kontrol et.";
             } else if (name === "auraxSignIn") {
-                message = "Aura X oturumu doğrulandı ancak Eğitim profili açılamadı. Supabase Eğitim SQL kurulumunu ve kullanıcı profilini kontrol et.";
+                message = "Forever oturumu doğrulandı ancak Eğitim profili açılamadı. Supabase Eğitim SQL kurulumunu ve kullanıcı profilini kontrol et.";
             } else {
                 message = "Sunucu tarafında beklenmeyen bir hata oluştu. Supabase education-actions Edge Function günlüklerini kontrol et.";
             }
@@ -61,8 +61,8 @@ const callFunction = async (name, data = {}) => {
 };
 
 const CLASS_OPTIONS = ["5","6","7","8","9","10","11","12"];
-const AURAX_URL = "https://rzdvezdccgkfzfpizwmj.supabase.co";
-const AURAX_KEY = "sb_publishable_yVs-2YKiVpZ2_wOmPZvdag_AzkxdABU";
+const FOREVER_URL = SUPABASE_URL;
+const FOREVER_KEY = SUPABASE_PUBLISHABLE_KEY;
 const AVATAR_OPTIONS = {
     "owl-blue": { emoji: "🦉", label: "Mavi baykuş" },
     "cat-white": { emoji: "🐱", label: "Beyaz kedi" },
@@ -81,21 +81,21 @@ function validUsername(value) {
     return /^[a-zA-Z0-9._-]{3,24}$/.test(String(value || ""));
 }
 
-async function checkAuraXUsernameAvailability(username) {
+async function checkForeverUsernameAvailability(username) {
     try {
-        const response = await fetch(`${AURAX_URL}/functions/v1/username-available`, {
+        const response = await fetch(`${FOREVER_URL}/functions/v1/username-available`, {
             method: "POST",
-            headers: { "Content-Type": "application/json", apikey: AURAX_KEY, Authorization: `Bearer ${AURAX_KEY}` },
+            headers: { "Content-Type": "application/json", apikey: FOREVER_KEY, Authorization: `Bearer ${FOREVER_KEY}` },
             body: JSON.stringify({ username })
         });
         if (!response.ok) {
-            console.warn("Aura X kullanıcı adı kontrolü yapılamadı:", response.status);
+            console.warn("Forever kullanıcı adı kontrolü yapılamadı:", response.status);
             return null;
         }
         const result = await response.json();
         return typeof result?.available === "boolean" ? result.available : null;
     } catch (error) {
-        console.warn("Aura X kullanıcı adı kontrolü yapılamadı:", error);
+        console.warn("Forever kullanıcı adı kontrolü yapılamadı:", error);
         return null;
     }
 }
@@ -472,15 +472,15 @@ if (isIndex && $("loginForm")) {
 
         let newCredential = null;
         try {
-            // İki platformun kullanıcı adı kayıtları birlikte kontrol edilir; kontrol erişilemiyorsa
-            // aynı kullanıcı adının iki platformda ayrışmaması için kayıt güvenli biçimde durdurulur.
-            const auraAvailable = await checkAuraXUsernameAvailability(usernameLower);
-            if (auraAvailable === false) {
-                showError("Bu kullanıcı adı Aura X'te zaten seçilmiş.", $("registerUsername"));
+            // Beray ve Forever aynı hesap havuzunu kullanır; kullanıcı adı Forever kayıtlarına karşı kontrol edilir.
+            // Kontrol erişilemiyorsa aynı adın iki platformda ayrışmaması için kayıt güvenli biçimde durdurulur.
+            const foreverAvailable = await checkForeverUsernameAvailability(usernameLower);
+            if (foreverAvailable === false) {
+                showError("Bu kullanıcı adı zaten alınmış (Forever'da kayıtlı olabilir). Forever hesabın varsa Forever ile giriş yap.", $("registerUsername"));
                 return;
             }
-            if (auraAvailable === null) {
-                showError("Aura X kullanıcı adı kontrolü şu anda kullanılamıyor. Supabase username-available Edge Function'ını yayımla ve tekrar dene.", $("registerUsername"));
+            if (foreverAvailable === null) {
+                showError("Kullanıcı adı kontrolü şu anda yapılamıyor. Biraz sonra tekrar dene.", $("registerUsername"));
                 return;
             }
 
