@@ -94,4 +94,21 @@
 <div id="teacherLoading" class="loading-screen"><div class="loading-mark"><span class="moon-mark"></span><strong>BERA<span>Y</span></strong></div><div class="spinner"></div><p>Öğretmen paneli hazırlanıyor...</p></div>
 <div id="teacherToast" class="toast"></div>
 <script type="module" src="./app.js"></script>
+
+<div id="privacyAcknowledgementOverlay" class="privacy-ack-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="privacyAcknowledgementTitle">
+  <section class="privacy-ack-card">
+    <span class="kicker">HESAP GÜVENLİĞİ VE GİZLİLİK</span>
+    <h2 id="privacyAcknowledgementTitle">KVKK Aydınlatma Bildirimi</h2>
+    <div class="privacy-ack-copy">
+      <p>Beray Eğitim; hesap oluşturma ve eğitim hizmetlerini sunmak için ad-soyad, e-posta, kullanıcı adı, hesap kimliği, ders ilerlemesi, sınav sonuçları, yoklama ve sınıf içi etkinlik bilgilerini işler. Hesap güvenliği, kimlik doğrulama, destek ve hizmet sürekliliği için işlem türleri ile kayıt zamanları da tutulur.</p>
+      <p>Beray Eğitim, Forever ile ortak Supabase projesini kullanır. Bu projenin veritabanı Avustralya (ap-southeast-2) bölgesinde barındırılır; kişisel verileriniz yurt dışındaki altyapı sağlayıcılarında işlenebilir veya aktarılabilir.</p>
+      <p>Veri sorumlusunun kimliği ve iletişim bilgileri, aktarım dayanağı, veri saklama süreleri, hizmet sağlayıcı/alıcı grupları ve KVKK başvuru kanalları işletmeci tarafından nihai aydınlatma metninde tamamlanmalıdır.</p>
+    </div>
+    <label class="privacy-ack-check"><input id="privacyAckTerms" type="checkbox"><span>Kullanım şartlarını kabul ediyorum.</span></label>
+    <label class="privacy-ack-check"><input id="privacyAckRead" type="checkbox"><span>KVKK Aydınlatma Bildirimini okudum ve bilgilendirildim.</span></label>
+    <p id="privacyAckError" class="privacy-ack-error" role="alert" aria-live="polite"></p>
+    <button id="savePrivacyAcknowledgement" class="primary full" type="button">Onayla ve devam et</button>
+  </section>
+</div>
+
 </body></html>
