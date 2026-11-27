@@ -416,6 +416,7 @@ if (isIndex && $("loginForm")) {
         const password = $("registerPassword")?.value ?? "";
         const confirmPassword = $("registerPasswordConfirm")?.value ?? "";
         const terms = $("terms");
+        const privacyConsent = $("privacyConsent");
 
         const showError = (message, field = null) => {
             if (errorBox) {
@@ -450,8 +451,13 @@ if (isIndex && $("loginForm")) {
             return;
         }
 
-        if (terms && !terms.checked) {
+        if (!terms?.checked) {
             showError("Kayıt olmak için kullanım şartlarını kabul et.", terms);
+            return;
+        }
+
+        if (!privacyConsent?.checked) {
+            showError("Devam etmek için KVKK Aydınlatma Bildirimini okuduğunu onayla.", privacyConsent);
             return;
         }
 
@@ -485,7 +491,11 @@ if (isIndex && $("loginForm")) {
             }
 
             window.__BERAY_SIGNUP_IN_PROGRESS = true;
-            newCredential = await createUserWithEmailAndPassword(auth, email, password, { displayName: name, username, usernameLower });
+            newCredential = await createUserWithEmailAndPassword(auth, email, password, {
+                displayName: name, username, usernameLower,
+                educationSignup: true, termsAccepted: true, privacyNoticeAccepted: true,
+                termsVersion: "beray-terms-v1", privacyNoticeVersion: "beray-kvkk-v2"
+            });
             const supabaseUser = newCredential.user;
             if (newCredential.needsEmailConfirmation || !supabaseUser) {
                 window.__BERAY_SIGNUP_IN_PROGRESS = false;
