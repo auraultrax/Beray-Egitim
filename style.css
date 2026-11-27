@@ -567,3 +567,10 @@ body {
   *,*::before,*::after { scroll-behavior:auto!important; animation-duration:.01ms!important; animation-iteration-count:1!important; transition-duration:.01ms!important; }
 }
 
+
+/* KVKK disclosure in the registration form */
+.privacy-disclosure{margin:12px 0;padding:12px 14px;border:1px solid var(--line);border-radius:14px;background:#f7faf9;color:var(--ink-2);font-size:12px;line-height:1.55}
+.privacy-disclosure summary{cursor:pointer;color:var(--violet);font-weight:900}
+.privacy-disclosure p{margin:10px 0 0}
+.privacy-disclosure p+p{margin-top:7px}
+.privacy-disclosure[open]{background:#f2f7f5}
