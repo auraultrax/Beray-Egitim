@@ -574,3 +574,16 @@ body {
 .privacy-disclosure p{margin:10px 0 0}
 .privacy-disclosure p+p{margin-top:7px}
 .privacy-disclosure[open]{background:#f2f7f5}
+
+/* Existing-account KVKK acknowledgement gate */
+.privacy-ack-overlay{position:fixed;inset:0;z-index:100000;display:grid;place-items:center;padding:18px;background:rgba(8,22,28,.76);backdrop-filter:blur(9px);-webkit-backdrop-filter:blur(9px);overflow:auto}
+.privacy-ack-overlay.hidden{display:none!important}
+.privacy-ack-card{width:min(100%,620px);max-height:min(90dvh,820px);overflow:auto;padding:28px;border:1px solid #dce7e4;border-radius:22px;background:#fff;box-shadow:0 24px 80px rgba(9,31,41,.28);color:var(--ink)}
+.privacy-ack-card h2{font-size:25px;line-height:1.2;margin:8px 0 15px;font-weight:900}
+.privacy-ack-copy{max-height:34dvh;overflow:auto;padding:14px 15px;border:1px solid var(--line);border-radius:14px;background:#f7faf9;color:var(--ink-2);font-size:13px;line-height:1.65}
+.privacy-ack-copy p{margin:0}
+.privacy-ack-copy p+p{margin-top:10px}
+.privacy-ack-check{display:flex!important;align-items:flex-start!important;gap:10px!important;margin:14px 0!important;color:var(--ink-2)!important;font-size:13px!important;line-height:1.5}
+.privacy-ack-check input{width:18px!important;height:18px!important;flex:none;margin:1px 0 0!important;accent-color:var(--violet)}
+.privacy-ack-error{min-height:18px;margin:10px 0;color:#c03951;font-size:12px;font-weight:800}
+@media(max-width:600px){.privacy-ack-card{padding:20px 16px;border-radius:18px}.privacy-ack-card h2{font-size:21px}.privacy-ack-copy{max-height:38dvh;font-size:12px}}
