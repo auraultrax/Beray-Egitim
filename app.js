@@ -657,6 +657,73 @@ if (isIndex && $("loginForm")) {
 }
 
 
+
+/* =========================================================
+   MEVCUT HESAPLAR İÇİN KVKK BİLDİRİMİ VE ONAY KAYDI
+========================================================= */
+const privacyAcknowledgementOverlay = $("privacyAcknowledgementOverlay");
+const privacyAcknowledgementButton = $("savePrivacyAcknowledgement");
+
+privacyAcknowledgementButton?.addEventListener("click", async () => {
+    const termsAccepted = $("privacyAckTerms")?.checked === true;
+    const noticeAcknowledged = $("privacyAckRead")?.checked === true;
+    const errorBox = $("privacyAckError");
+
+    if (!termsAccepted || !noticeAcknowledged) {
+        if (errorBox) errorBox.textContent = "Devam etmek için iki kutuyu da ayrı ayrı işaretlemelisin.";
+        return;
+    }
+
+    privacyAcknowledgementButton.disabled = true;
+    privacyAcknowledgementButton.textContent = "Kayıt ediliyor...";
+    if (errorBox) errorBox.textContent = "";
+
+    try {
+        const { error } = await supabaseClient.rpc("education_acknowledge_consent", {
+            p_terms_version: "beray-terms-v1",
+            p_privacy_notice_version: "beray-kvkk-v2",
+            p_terms_accepted: true,
+            p_privacy_notice_acknowledged: true
+        });
+        if (error) throw error;
+        window.location.reload();
+    } catch (error) {
+        console.error("KVKK aydınlatma kaydı yazılamadı:", error);
+        if (errorBox) errorBox.textContent = "Onay kaydı Supabase'e yazılamadı. Bağlantı ve izinler kontrol edilmeden devam edemezsin.";
+        privacyAcknowledgementButton.disabled = false;
+        privacyAcknowledgementButton.textContent = "Yeniden dene";
+    }
+});
+
+async function ensureEducationPrivacyAcknowledgement(user) {
+    if (!privacyAcknowledgementOverlay) return true;
+    const errorBox = $("privacyAckError");
+    const { data, error } = await supabaseClient
+        .from("education_consent_logs")
+        .select("id")
+        .eq("auth_uid", user.uid)
+        .eq("privacy_notice_version", "beray-kvkk-v2")
+        .maybeSingle();
+
+    if (error) {
+        privacyAcknowledgementOverlay.classList.remove("hidden");
+        if (errorBox) errorBox.textContent = "KVKK kayıt durumu doğrulanamadı. Güvenlik nedeniyle uygulama açılmadı; bağlantıyı kontrol edip tekrar dene.";
+        const button = $("savePrivacyAcknowledgement");
+        if (button) button.disabled = true;
+        return false;
+    }
+
+    if (data) {
+        privacyAcknowledgementOverlay.classList.add("hidden");
+        return true;
+    }
+
+    privacyAcknowledgementOverlay.classList.remove("hidden");
+    const button = $("savePrivacyAcknowledgement");
+    if (button) button.disabled = false;
+    return false;
+}
+
 /* =========================================================
    OTURUM KONTROLÜ
 ========================================================= */
@@ -689,6 +756,11 @@ onAuthStateChanged(
 
             }
 
+
+            // Every existing account must explicitly acknowledge the active notice version.
+            // The database records the checked boxes, exact notice hash and server-side timestamp.
+            const privacyAcknowledged = await ensureEducationPrivacyAcknowledgement(user);
+            if (!privacyAcknowledged) return;
 
             const userSnapshot =
                 await getDoc(
