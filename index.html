@@ -39,7 +39,14 @@
       <label>E-posta<input id="registerEmail" type="email" autocomplete="email" placeholder="ornek@mail.com" required></label>
       <label>Şifre<div class="input-with-button"><input id="registerPassword" type="password" minlength="6" autocomplete="new-password" placeholder="En az 6 karakter" required><button id="showRegisterPassword" type="button">Göster</button></div></label>
       <label>Şifre Tekrar<input id="registerPasswordConfirm" type="password" minlength="6" autocomplete="new-password" placeholder="Şifreyi tekrar gir" required></label>
-      <label class="check terms"><input id="terms" type="checkbox" required><span>Kullanım şartlarını ve gizlilik politikasını kabul ediyorum.</span></label>
+      <label class="check terms"><input id="terms" type="checkbox" required><span>Kullanım şartlarını kabul ediyorum.</span></label>
+      <details class="privacy-disclosure">
+        <summary>KVKK Aydınlatma Bildirimini oku</summary>
+        <p>Beray Eğitim; hesap oluşturma ve eğitim hizmetlerini sunmak için ad-soyad, e-posta, kullanıcı adı, hesap kimliği, ders ilerlemesi, sınav sonuçları, yoklama ve sınıf içi etkinlik bilgilerini işler. Hesap güvenliği, kimlik doğrulama, destek ve hizmet sürekliliği için işlem türleri ile kayıt zamanları da tutulur.</p>
+        <p>Beray Eğitim, Forever ile ortak Supabase projesini kullanır. Bu projenin veritabanı Avustralya (ap-southeast-2) bölgesinde barındırılır; kişisel verileriniz yurt dışındaki altyapı sağlayıcılarında işlenebilir veya aktarılabilir.</p>
+        <p>Veri sorumlusunun kimliği ve iletişim bilgileri, aktarım dayanağı, veri saklama süreleri, hizmet sağlayıcı/alıcı grupları ve KVKK başvuru kanalları işletmeci tarafından nihai aydınlatma metninde tamamlanmalıdır.</p>
+      </details>
+      <label class="check terms"><input id="privacyConsent" type="checkbox" required><span>KVKK Aydınlatma Bildirimini okudum ve bilgilendirildim.</span></label>
       <button class="primary full" type="submit">Hesap Oluştur <span>→</span></button>
     </form>
     <div class="auth-divider">ya da</div>
