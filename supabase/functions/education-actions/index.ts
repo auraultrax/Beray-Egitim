@@ -337,7 +337,7 @@ Deno.serve(async (req) => {
       }
       case 'deleteSelf': {
         // Cleanup is used only if Education registration fails. Protect accounts already linked to Forever.
-        const { data: linked, error: linkedError } = await service.from('users').select('id').filter('data->>authUid','eq',uid).limit(1);
+        const { data: linked, error: linkedError } = await service.from('forever_documents').select('id').eq('collection_name','users').eq('owner_id',uid).limit(1);
         if (linkedError) throw new ApiError(500,linkedError.code || 'database_error','Forever bağlantısı doğrulanamadı; hesap güvenli biçimde silinmedi.');
         if (linked?.length) throw new ApiError(409,'account-linked','Bu kimlik Forever hesabına bağlı; ortak hesap otomatik silinmedi.');
         const profile = await getRecord('users',uid);
