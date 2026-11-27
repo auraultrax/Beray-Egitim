@@ -3,14 +3,14 @@
    Tüm mevcut sınıf adları korunmuştur (app.js ile uyumlu).
 ========================================================= */
 :root{
-  --ink:#1e1b3f;--ink-2:#4a4670;--ink-3:#7d79a3;
-  --violet:#6c4cf5;--violet-2:#8b6bff;--pink:#ff5fa2;--sun:#ffc43d;--mint:#1fcfa0;--sky:#38a8ff;--coral:#ff7a59;
-  --bg:#f5f2ff;--card:#ffffff;--line:#e5e0ff;
-  --grad-main:linear-gradient(135deg,#6c4cf5 0%,#9b5cff 45%,#ff5fa2 100%);
-  --grad-sun:linear-gradient(135deg,#ffc43d,#ff8a4c);
-  --grad-mint:linear-gradient(135deg,#1fcfa0,#38a8ff);
-  --shadow:0 10px 30px rgba(108,76,245,.12);--shadow-lg:0 22px 60px rgba(108,76,245,.22);
-  --r:20px;--ease:cubic-bezier(.22,1.2,.36,1);
+  --ink:#172f40;--ink-2:#465e6c;--ink-3:#7b8c96;
+  --violet:#167f7a;--violet-2:#269d94;--pink:#cf8b78;--sun:#d9b66f;--mint:#399982;--sky:#5b9db5;--coral:#c97862;
+  --bg:#f2f6f5;--card:#ffffff;--line:#dce7e4;
+  --grad-main:linear-gradient(135deg,#17384a 0%,#176c70 58%,#269d94 100%);
+  --grad-sun:linear-gradient(135deg,#d9b66f,#c98c63);
+  --grad-mint:linear-gradient(135deg,#399982,#5b9db5);
+  --shadow:0 8px 24px rgba(23,56,74,.07);--shadow-lg:0 18px 48px rgba(23,56,74,.13);
+  --r:18px;--ease:cubic-bezier(.2,.75,.25,1);
 }
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
@@ -448,3 +448,122 @@ tbody tr:hover{background:#faf8ff}
 @media(max-width:650px){.social-search-row{flex-direction:column}.student-social-card{align-items:flex-start}.social-actions{width:100%;margin-left:66px}.point-history-row{grid-template-columns:1fr auto}.point-history-row span{grid-column:1/-1}}
 
 .profile-badges{display:flex;justify-content:center;gap:7px;flex-wrap:wrap;margin-top:14px}.profile-badge{font-size:11px;background:#f2efff;color:#5841b3;border:1px solid #e7e0ff;padding:6px 10px;border-radius:999px;font-weight:900}
+
+
+/* BERAY EĞİTİM — kurumsal lacivert / teal tema.
+   Yalnızca görsel katman; mevcut sınıflar, sayfalar ve davranışlar korunur. */
+body {
+  font-family:"Inter","Segoe UI",system-ui,-apple-system,Arial,sans-serif;
+  color:var(--ink);
+  background:
+    radial-gradient(900px 480px at 8% -8%,rgba(38,157,148,.10),transparent 60%),
+    radial-gradient(800px 460px at 100% 0%,rgba(217,182,111,.10),transparent 55%),
+    var(--bg);
+}
+:focus-visible { outline-color:rgba(22,127,122,.42); }
+.landing-glow { opacity:.26; filter:blur(105px); }
+.g1 { background:#82c7bd; }
+.g2 { background:#d9c395; }
+.brand-line strong,.mobile-brand { color:#17384a; }
+.brand-line strong span,.mobile-brand span { color:var(--violet); }
+.brand-tag { color:#6c818d; }
+.kicker,.eyebrow { color:var(--violet); }
+.auth-hero h1 em { color:#258f88; }
+.auth-hero p { color:#5d707b; }
+.feature-row span { color:#47616d; }
+.auth-card,.glass {
+  background:rgba(255,255,255,.94);
+  border:1px solid rgba(23,56,74,.09);
+  box-shadow:0 24px 72px rgba(23,56,74,.12);
+  backdrop-filter:blur(18px);
+}
+.auth-head p,.auth-card label { color:var(--ink-2); }
+.segmented { background:#edf3f2; }
+.seg { color:#72838b; }
+.seg.active {
+  background:#fff; color:var(--violet);
+  box-shadow:0 3px 10px rgba(23,56,74,.09);
+}
+.auth-card input,.input-with-button {
+  background:#fbfdfc; border-color:#dce7e4; color:var(--ink);
+}
+.auth-card input:focus,.input-with-button:focus-within {
+  border-color:var(--violet); box-shadow:0 0 0 3px rgba(22,127,122,.10);
+}
+.input-with-button input { background:transparent; }
+.input-with-button button,.text-btn { color:var(--violet); }
+.primary,.primary-button {
+  background:var(--grad-main); color:#fff;
+  box-shadow:0 7px 18px rgba(23,108,112,.18);
+}
+.primary:hover,.primary-button:hover {
+  box-shadow:0 11px 22px rgba(23,108,112,.22);
+}
+.ghost,.ghost-button {
+  background:#fff; border-color:#dce7e4; color:#425c69;
+}
+.ghost:hover,.ghost-button:hover { border-color:var(--violet); color:var(--violet); }
+.aurax-btn { background:linear-gradient(135deg,#17384a,#167f7a)!important; }
+.sidebar {
+  background:linear-gradient(180deg,#17384a 0%,#143341 58%,#15535a 100%);
+  box-shadow:5px 0 24px rgba(23,56,74,.12);
+}
+.sidebar .moon-mark:after { background:#1c5260; }
+.student-chip { background:rgba(255,255,255,.09); border-color:rgba(255,255,255,.13); }
+.nav-btn { color:rgba(255,255,255,.76); }
+.nav-btn:hover { background:rgba(255,255,255,.10); }
+.nav-btn.active {
+  background:#fff; color:#176f70;
+  box-shadow:0 6px 16px rgba(6,27,34,.15);
+}
+.badge { background:#c97862; }
+.topbar {
+  background:rgba(242,246,245,.91);
+  border-color:var(--line);
+}
+.icon-btn,.mobile-menu { color:var(--violet); background:#fff; box-shadow:0 4px 14px rgba(23,56,74,.08); }
+.dashboard-hero,.detail-hero { box-shadow:var(--shadow-lg); }
+.dashboard-hero .kicker { color:#dcefe7; }
+.stat,.course-card,.ready-course-card,.panel,.test-card,.result-card,.test-item,
+.announcement-card,.result-summary>div,.lesson-row,.student-social-card {
+  border-color:var(--line); box-shadow:var(--shadow);
+}
+.stat:hover,.course-card:hover,.ready-course-card:hover,.test-card:hover,
+.result-card:hover,.test-item:hover { box-shadow:var(--shadow-lg); }
+.course-icon,.course-status,.mini-avatar {
+  background:#e7f1ef; color:#176f70;
+}
+.filter { border-color:var(--line); background:#fff; color:#48616d; }
+.filter.active { background:var(--grad-main); color:#fff; }
+.progress,.quiz-progress { background:#e5eeeb; }
+.lesson-number,.test-badge { background:var(--grad-main); }
+.profile-metrics div { background:#f6f9f8; border-color:var(--line); }
+.profile-badge,.social-badges span {
+  background:#e9f3f1; color:#176f70; border-color:#d6e7e3;
+}
+.notification-social,.notification-unread {
+  background:#edf6f3; border-left-color:var(--violet);
+}
+.social-empty,.empty { background:#f8fbfa; border-color:#dce7e4; color:#72838b; }
+.social-search-row input,.social-actions select,.share-select-label select {
+  background:#fff; border-color:var(--line); color:var(--ink);
+}
+.secondary-button { background:#fff; border-color:var(--line); color:#425c69; }
+.search { background:#fff; border-color:var(--line); }
+.search input { background:transparent; color:var(--ink); }
+.announcement-card>span,.announcement-icon { background:#f7f0df; color:#8c6b30; }
+.score-pill { background:#e5f4ef; color:#24785f; }
+.result-summary strong { background:var(--grad-main); -webkit-background-clip:text; background-clip:text; }
+.result-card>strong,.detail-aside .big-progress { color:var(--violet); }
+.profile-cover { background:var(--grad-main); }
+.profile-avatar { border-color:#fff; }
+.quiz-top>strong { background:var(--grad-main); }
+@media (hover:hover) {
+  .course-card:hover,.ready-course-card:hover { transform:translateY(-4px); }
+  .stat:hover { transform:translateY(-3px); }
+  .nav-btn:hover { transform:translateX(2px); }
+}
+@media (prefers-reduced-motion:reduce) {
+  *,*::before,*::after { scroll-behavior:auto!important; animation-duration:.01ms!important; animation-iteration-count:1!important; transition-duration:.01ms!important; }
+}
+
