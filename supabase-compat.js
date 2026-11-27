@@ -5,8 +5,8 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
 // Forever ile aynı Supabase projesi (AURA ULTRA X): Forever kullanıcıları aynı Auth hesabıyla girer.
-export const SUPABASE_URL = 'https://zblbsjmtituericpmazj.supabase.co';
-export const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_0XUjb6u_goYIjSB6m7vYsQ_hpyI0Az7';
+export const SUPABASE_URL = 'https://gfuewsdkytfssumxwyxz.supabase.co';
+export const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_-CX6sFOEApna11EOem6oOg_39DkcaIq';
 export const supabaseClient = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
   auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
 });
@@ -81,7 +81,17 @@ Object.defineProperty(auth, 'currentUser', { enumerable: true, get: () => normal
 export const db = { provider: 'supabase' };
 export const functions = { provider: 'supabase-edge-functions' };
 
-supabaseClient.auth.onAuthStateChange((_event, session) => { rawCurrentUser = session?.user || null; });
+supabaseClient.auth.onAuthStateChange((event, session) => {
+  rawCurrentUser = session?.user || null;
+  if (event === 'SIGNED_IN' && session?.user) {
+    // Queue after the auth callback returns to avoid holding the Supabase auth lock.
+    queueMicrotask(() => {
+      supabaseClient.rpc('education_log_login')
+        .then(({ error }) => { if (error) console.warn('Beray giriş kaydı yazılamadı:', error.code || error.message); })
+        .catch((error) => console.warn('Beray giriş kaydı yazılamadı:', error?.message || error));
+    });
+  }
+});
 supabaseClient.auth.getSession().then(({ data }) => { rawCurrentUser = data?.session?.user || rawCurrentUser; }).catch(() => {});
 
 export function onAuthStateChanged(_auth, callback) {
@@ -109,6 +119,16 @@ export async function createUserWithEmailAndPassword(_auth, email, password, pro
   if (profile?.displayName) metadata.display_name = String(profile.displayName).trim().slice(0, 80);
   if (profile?.username) metadata.username = String(profile.username).trim().slice(0, 40);
   if (profile?.usernameLower) metadata.username_lower = String(profile.usernameLower).trim().toLowerCase().slice(0, 40);
+  if (profile?.educationSignup) {
+    if (profile.termsAccepted !== true || profile.privacyNoticeAccepted !== true) {
+      throw errorFrom({ message: 'Kullanım şartları ve KVKK aydınlatma bildirimi ayrı ayrı onaylanmalıdır.', code: 'consent_required' });
+    }
+    metadata.education_signup = 'true';
+    metadata.education_terms_accepted = 'true';
+    metadata.education_privacy_notice_accepted = 'true';
+    metadata.education_terms_version = String(profile.termsVersion || 'beray-terms-v1');
+    metadata.education_privacy_notice_version = String(profile.privacyNoticeVersion || 'beray-kvkk-v2');
+  }
   const { data, error } = await supabaseClient.auth.signUp({ email, password, options: { data: metadata } });
   if (error) throw errorFrom(error, 'Hesap oluşturulamadı.');
   if (!data?.session) {
