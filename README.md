@@ -1,6 +1,6 @@
 # Beray Eğitim — Forever + Supabase
 
-Öğrenci ve öğretmen panelli eğitim platformu. Firebase kullanılmaz; **Forever ile aynı Supabase projesi** (AURA ULTRA X, `zblbsjmtituericpmazj`) kullanılır. Forever hesabı olan herkes aynı hesapla Beray Eğitim'e girebilir.
+Öğrenci ve öğretmen panelli eğitim platformu. Firebase kullanılmaz; **Forever ile aynı Supabase projesi** (AURA ULTRA X, `gfuewsdkytfssumxwyxz`) kullanılır. Forever hesabı olan herkes aynı hesapla Beray Eğitim'e girebilir.
 
 ## Site dosyaları
 
@@ -10,20 +10,21 @@
 
 - **E-posta ile giriş / kayıt:** Doğrudan Supabase Auth. Forever'da kullandığın e-posta ve şifreyle de girilebilir.
 - **Forever ile Giriş Yap:** Forever kullanıcı adı ve şifresi `username-login` Edge Function'ında doğrulanır, dönen oturum Beray'e yüklenir. Ayrı bir köprü fonksiyonu gerekmez.
-- **Kayıt:** Kullanıcı adı, Forever'ın `username-available` fonksiyonuyla kontrol edilir; böylece aynı ad iki platformda ayrışmaz. Profil, SQL tetikleyicisiyle (`education_create_profile_for_auth_user`) otomatik oluşur.
+- **Kayıt:** Kullanıcı adı `username-available` ile denetlenir. Kullanım şartları kabulü ve KVKK aydınlatma bildirimi onayı ayrı ayrı alınır; Auth tetikleyicisi bu iki onayın sürümünü, metin özetini ve sunucu zamanını `education_consent_logs` tablosuna yazar.
+- **Loglar:** Başarılı girişler `education_auth_logs` / `forever_auth_logs`; değişen Education kayıtlarının alan adları `education_audit_events`; Forever açık rıza kayıtları `forever_consent_logs` görünümünde izlenir. Parola veya ham erişim belirteci loglanmaz.
 
 ## Kurulum
 
 1. `supabase-compat.js` içindeki `SUPABASE_URL` ve `SUPABASE_PUBLISHABLE_KEY` Forever'ın Supabase projesiyle aynı olmalıdır.
-2. Eğitim tabloları ve fonksiyonları Forever projesinde kuruludur. Yeni bir projeye kuruyorsan Forever deposundaki `SUPABASE_TUM_KURULUM.sql` ve eğitim SQL'ini (`supabase_education_setup.sql`) çalıştır.
+2. Eğitim tabloları, KVKK ve log migrasyonları aktif projeye uygulanmış olmalıdır. `education_records`, `education_consent_logs`, `education_auth_logs` ve `education_audit_events` tablolarının mevcut olduğunu doğrula.
 3. `education-actions` Edge Function'ı (test oluşturma/puanlama, kullanıcı arama, takip, rol yönetimi, müfredat) Forever projesinde yayımlıdır. Yeniden yayımlamak için Supabase CLI kurulu ve giriş yapılmış bir bilgisayarda bu deponun klasöründe:
 
    ```bash
    supabase login
-   supabase functions deploy education-actions --project-ref zblbsjmtituericpmazj
+   supabase functions deploy education-actions --project-ref gfuewsdkytfssumxwyxz
    ```
 
-   `ready_bank.json` ve `curriculum_seed.json` fonksiyon paketine dahil edilmez; ilk kullanımda `BANK_BASE_URL` adresinden okunur ve önbelleğe alınır. Varsayılan adres bu deponun GitHub'daki `main` dalıdır. Depoyu private yaparsan Supabase → Edge Functions → Secrets bölümüne erişilebilir bir adresle `BANK_BASE_URL` ekle. `username-login` ve `username-available` fonksiyonları Forever tarafında zaten yayımlıdır.
+   `ready_bank.json` ve `curriculum_seed.json` fonksiyon paketine dahil edilmez; ilk kullanımda `BANK_BASE_URL` adresinden okunur ve önbelleğe alınır. Varsayılan adres bu deponun GitHub'daki `main` dalıdır. Depoyu private yaparsan Supabase → Edge Functions → Secrets bölümüne erişilebilir bir adresle `BANK_BASE_URL` ekle. `username-login` ve `username-available` fonksiyonları aynı aktif projede yayımlanmalıdır.
 4. Supabase Dashboard → Authentication → Sign In / Providers bölümünde e-posta/şifre yönteminin açık olduğuna bak. E-posta doğrulaması açıksa kullanıcı önce gelen bağlantıya tıklamalıdır.
 5. Siteyi HTTPS üzerinden yayımla (GitHub Pages). `_config.yml` sunucu dosyalarını Pages'ten dışlar.
 
